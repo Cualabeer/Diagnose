@@ -2,12 +2,38 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Diagnostic Data Summary</title>
+  <title>Diagnostic Data Dashboard</title>
   <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      margin-top: 20px;
+    }
+    th, td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: left;
+    }
+    th {
+      background-color: #f2f2f2;
+    }
+    canvas {
+      margin-top: 40px;
+    }
+  </style>
 </head>
 <body>
-  <h1>Vehicle Diagnostic Data</h1>
+  <h1>Vehicle Diagnostic Dashboard</h1>
+  
+  <h2>All Diagnostic Entries</h2>
+  <table id="data-table">
+    <thead></thead>
+    <tbody></tbody>
+  </table>
+
+  <h2>Fault Code Frequency</h2>
   <canvas id="faultChart" width="600" height="400"></canvas>
 
   <script>
@@ -19,6 +45,24 @@
       complete: function(results) {
         const data = results.data;
 
+        // Generate table headers and rows
+        const table = document.getElementById('data-table');
+        const thead = table.querySelector('thead');
+        const tbody = table.querySelector('tbody');
+
+        if (data.length > 0) {
+          // Headers
+          const headers = Object.keys(data[0]);
+          let headerRow = '<tr>' + headers.map(h => `<th>${h}</th>`).join('') + '</tr>';
+          thead.innerHTML = headerRow;
+
+          // Data rows
+          tbody.innerHTML = data.map(row => {
+            return '<tr>' + headers.map(h => `<td>${row[h] || ''}</td>`).join('') + '</tr>';
+          }).join('');
+        }
+
+        // Fault code frequency chart
         let faultCounts = {};
         data.forEach(row => {
           if(row['Fault Codes']) {
