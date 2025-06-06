@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Diagnostic Data Summary</title>
+  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <h1>Vehicle Diagnostic Data</h1>
+  <canvas id="faultChart" width="600" height="400"></canvas>
+
+  <script>
+    const csvUrl = 'https://raw.githubusercontent.com/cualabeer/diagnostics-dashboard/main/diagnostics.csv';
+
+    Papa.parse(csvUrl, {
+      download: true,
+      header: true,
+      complete: function(results) {
+        const data = results.data;
+
+        let faultCounts = {};
+        data.forEach(row => {
+          if(row['Fault Codes']) {
+            row['Fault Codes'].split(',').forEach(code => {
+              code = code.trim();
+              if(code) {
+                faultCounts[code] = (faultCounts[code] || 0) + 1;
+              }
+            });
+          }
+        });
+
+        const labels = Object.keys(faultCounts);
+        const counts = Object.values(faultCounts);
+
+        const ctx = document.getElementById('faultChart').getContext('2d');
+        new Chart(ctx, {
+          type: 'bar',
+          data: {
+            labels: labels,
+            datasets: [{
+              label: 'Fault Code Frequency',
+              data: counts,
+              backgroundColor: 'rgba(75, 192, 192, 0.6)'
+            }]
+          },
+          options: {
+            scales: {
+              y: { beginAtZero: true }
+            }
+          }
+        });
+      }
+    });
+  </script>
+</body>
+</html>
