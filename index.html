@@ -126,6 +126,19 @@
           filteredData = allData;
           renderTable(allData);
           updateChart(allData);
+          document.querySelectorAll('.clickable-plate').forEach(cell => {
+  cell.addEventListener('click', function () {
+    const plate = this.dataset.plate;
+    const car = allData.find(row => row[Object.keys(row)[0]] === plate);
+    if (car) {
+      const reportBody = document.getElementById('report-body');
+      reportBody.innerHTML = `<h2>Full Report: ${plate}</h2><ul>` +
+        Object.entries(car).map(([k, v]) => `<li><strong>${k}</strong>: ${v}</li>`).join('') +
+        '</ul>';
+      document.getElementById('report-overlay').classList.remove('hidden');
+    }
+  });
+});
         }
       });
     }
