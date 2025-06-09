@@ -8,6 +8,18 @@
   <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
+<script>
+  window.addEventListener('scroll', () => {
+    const header = document.querySelector('.header-with-logo');
+    if (window.scrollY > 30) {
+      header.classList.add('shrink');
+      document.body.classList.add('shrunk');
+    } else {
+      header.classList.remove('shrink');
+      document.body.classList.remove('shrunk');
+    }
+  });
+</script>
 <body>
   <header class="header-with-logo">
     <h1>Vehicle Diagnostic Dashboard</h1>
