@@ -1,149 +1,68 @@
 body {
   font-family: Arial, sans-serif;
   margin: 0;
-  padding: 0 15px 40px 15px;
-  background: #fafafa;
-}
-header {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  align-items: center;
-  background: #2c3e50;
-  padding: 15px 20px;
-  color: white;
-  border-radius: 6px;
-  margin-bottom: 20px;
-  gap: 15px;
-}
-header h1 {
-  margin: 0;
-  font-size: 1.5rem;
-  flex: 1 1 100%;
-  text-align: center;
-}
-#upload-section {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  flex-wrap: wrap;
-  justify-content: center;
-  flex: 1 1 100%;
-}
-#fileInput {
-  padding: 6px;
-  border-radius: 4px;
-  border: none;
-  cursor: pointer;
-  min-width: 150px;
-}
-#fileInfo {
-  font-size: 0.9rem;
-  font-style: italic;
-  color: #ddd;
-  min-width: 160px;
-  max-width: 300px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-#searchInput {
-  padding: 8px 12px;
-  border-radius: 6px;
-  border: none;
-  width: 200px;
-  font-size: 1rem;
-  min-width: 160px;
-  max-width: 100%;
+  padding: 0;
   box-sizing: border-box;
 }
 
-/* Table responsiveness */
+.header-with-logo {
+  background-image: url('images/logo.png');
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
+  background-attachment: fixed;
+  padding: 100px 20px 20px;
+  text-align: center;
+  color: white;
+  background-color: #1a1a1a;
+}
+
+#upload-section {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+input[type="file"], input[type="search"] {
+  padding: 8px;
+  font-size: 1rem;
+}
+
 table {
   border-collapse: collapse;
   width: 100%;
-  margin-top: 0;
-  background: white;
-  border-radius: 6px;
-  overflow-x: auto;
-  box-shadow: 0 2px 6px rgb(0 0 0 / 0.1);
-  display: block;
+  margin: 20px auto;
   max-width: 100%;
 }
-table thead, table tbody, table tr, table th, table td {
-  display: table;
-  width: 100%;
-  table-layout: fixed;
-}
+
 th, td {
-  border: 1px solid #ddd;
+  border: 1px solid #ccc;
   padding: 8px;
   text-align: left;
-  word-wrap: break-word;
 }
+
 th {
   background-color: #f2f2f2;
 }
 
-/* Chart container */
 #chart-container {
-  margin-top: 40px;
-  background: white;
-  border-radius: 6px;
-  box-shadow: 0 2px 6px rgb(0 0 0 / 0.1);
-  overflow-x: auto;
-}
-canvas {
-  display: block;
   max-width: 100%;
-  height: auto !important;
+  height: 400px;
+  margin: 40px auto;
 }
 
-p.note {
-  font-size: 0.9rem;
-  color: #444;
-  max-width: 600px;
-  margin-top: 8px;
-}
-a.upload-link {
-  color: #81d4fa;
-  text-decoration: underline;
-}
-a.upload-link:hover {
-  color: #4fc3f7;
-}
-
-/* Responsive tweaks */
-@media (min-width: 600px) {
-  header h1 {
-    flex: 0 0 auto;
-    text-align: left;
-  }
+@media (max-width: 768px) {
   #upload-section {
-    flex: 1 1 auto;
-    justify-content: flex-end;
+    flex-direction: column;
   }
-  table, table thead, table tbody, table tr, table th, table td {
-    display: table;
-    width: auto;
-    table-layout: auto;
-  }
-  table {
-    overflow-x: visible;
-  }
-}
 
-@media (max-width: 400px) {
-  #searchInput {
-    width: 100%;
-    min-width: unset;
+  table, th, td {
+    font-size: 0.9rem;
   }
-  #fileInput {
-    width: 100%;
-    min-width: unset;
-  }
-  #fileInfo {
-    max-width: 100%;
-    white-space: normal;
+
+  #chart-container {
+    height: 300px;
   }
 }
