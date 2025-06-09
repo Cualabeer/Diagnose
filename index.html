@@ -2,14 +2,14 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <img src="images/logo.png" alt="My Logo"
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Diagnostic Data Dashboard</title>
   <link rel="stylesheet" href="style.css" />
   <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-  <header>
+  <header class="header-with-logo">
     <h1>Vehicle Diagnostic Dashboard</h1>
     <div id="upload-section">
       <input type="file" id="fileInput" accept=".csv,.pdf" />
@@ -18,51 +18,51 @@
     </div>
   </header>
 
-  <h2>All Diagnostic Entries</h2>
-  <table id="data-table">
-    <thead></thead>
-    <tbody></tbody>
-  </table>
+  <main>
+    <section>
+      <h2>All Diagnostic Entries</h2>
+      <table id="data-table">
+        <thead></thead>
+        <tbody></tbody>
+      </table>
+    </section>
 
-  <h2>Fault Code Frequency</h2>
-  <div id="chart-container">
-    <canvas id="faultChart" width="600" height="400"></canvas>
-  </div>
+    <section>
+      <h2>Fault Code Frequency</h2>
+      <div id="chart-container">
+        <canvas id="faultChart" width="600" height="400"></canvas>
+      </div>
+    </section>
+  </main>
 
   <script>
     let allData = [];
     let filteredData = [];
 
-    // Function to render table from data array
     function renderTable(data) {
       const table = document.getElementById('data-table');
       const thead = table.querySelector('thead');
       const tbody = table.querySelector('tbody');
 
       if (data.length > 0) {
-        // Headers
         const headers = Object.keys(data[0]);
-        let headerRow = '<tr>' + headers.map(h => `<th>${h}</th>`).join('') + '</tr>';
-        thead.innerHTML = headerRow;
-
-        // Data rows
-        tbody.innerHTML = data.map(row => {
-          return '<tr>' + headers.map(h => `<td>${row[h] || ''}</td>`).join('') + '</tr>';
-        }).join('');
+        thead.innerHTML = '<tr>' + headers.map(h => `<th>${h}</th>`).join('') + '</tr>';
+        tbody.innerHTML = data.map(row =>
+          '<tr>' + headers.map(h => `<td>${row[h] || ''}</td>`).join('') + '</tr>'
+        ).join('');
       } else {
         thead.innerHTML = '';
         tbody.innerHTML = '<tr><td colspan="100%">No data found</td></tr>';
       }
     }
 
-    // Function to update fault code chart
     function updateChart(data) {
       let faultCounts = {};
       data.forEach(row => {
-        if(row['Fault Codes']) {
+        if (row['Fault Codes']) {
           row['Fault Codes'].split(',').forEach(code => {
             code = code.trim();
-            if(code) {
+            if (code) {
               faultCounts[code] = (faultCounts[code] || 0) + 1;
             }
           });
@@ -72,7 +72,7 @@
       const labels = Object.keys(faultCounts);
       const counts = Object.values(faultCounts);
 
-      if(window.faultChartInstance) {
+      if (window.faultChartInstance) {
         window.faultChartInstance.data.labels = labels;
         window.faultChartInstance.data.datasets[0].data = counts;
         window.faultChartInstance.update();
@@ -89,6 +89,8 @@
             }]
           },
           options: {
+            responsive: true,
+            maintainAspectRatio: false,
             scales: {
               y: { beginAtZero: true }
             }
@@ -97,7 +99,6 @@
       }
     }
 
-    // Load CSV from URL or uploaded file
     function loadCsvFromText(csvText) {
       Papa.parse(csvText, {
         header: true,
@@ -111,10 +112,9 @@
       });
     }
 
-    // Initial load from diagnostics.csv in repo
     fetch('diagnostics.csv')
       .then(response => {
-        if(!response.ok) throw new Error('Failed to load diagnostics.csv');
+        if (!response.ok) throw new Error('Failed to load diagnostics.csv');
         return response.text();
       })
       .then(text => loadCsvFromText(text))
@@ -122,19 +122,18 @@
         document.getElementById('fileInfo').textContent = 'Failed to load diagnostics.csv';
       });
 
-    // File upload handler
     document.getElementById('fileInput').addEventListener('change', function(evt) {
       const file = evt.target.files[0];
-      if(!file) return;
+      if (!file) return;
       document.getElementById('fileInfo').textContent = file.name;
 
       const reader = new FileReader();
       reader.onload = function(e) {
         const text = e.target.result;
-        if(file.name.toLowerCase().endsWith('.csv')) {
+        if (file.name.toLowerCase().endsWith('.csv')) {
           loadCsvFromText(text);
           document.getElementById('searchInput').value = '';
-        } else if(file.name.toLowerCase().endsWith('.pdf')) {
+        } else if (file.name.toLowerCase().endsWith('.pdf')) {
           alert('PDF upload detected. Currently only CSV parsing is supported.');
         } else {
           alert('Unsupported file type. Please upload a CSV or PDF.');
@@ -143,18 +142,11 @@
       reader.readAsText(file);
     });
 
-    // Search input handler
     document.getElementById('searchInput').addEventListener('input', function(evt) {
       const query = evt.target.value.trim().toLowerCase();
-      if(query === '') {
-        filteredData = allData;
-      } else {
-        filteredData = allData.filter(row => {
-          return Object.values(row).some(val =>
-            String(val).toLowerCase().includes(query)
-          );
-        });
-      }
+      filteredData = query === '' ? allData : allData.filter(row =>
+        Object.values(row).some(val => String(val).toLowerCase().includes(query))
+      );
       renderTable(filteredData);
       updateChart(filteredData);
     });
