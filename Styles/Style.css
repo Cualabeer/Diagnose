@@ -1,4 +1,4 @@
-/* Fix the header at the top */
+/* Make the header fixed at the top */
 .header-with-logo {
   position: fixed;
   top: 0;
@@ -15,22 +15,22 @@
   flex-wrap: wrap;
 }
 
-/* Remove default margin */
+/* Reset margin */
 body {
   margin: 0;
   font-family: Arial, sans-serif;
 }
 
-/* Give main content enough top padding so it doesn't go under header */
+/* Push the content below the fixed header */
 main {
-  padding-top: 100px; /* Adjust if you change header height */
+  padding-top: 130px; /* Adjust based on header height */
   max-width: 1200px;
   margin: 0 auto;
   padding-left: 1rem;
   padding-right: 1rem;
 }
 
-/* Style for upload section inside header */
+/* Upload section inside header */
 #upload-section {
   display: flex;
   align-items: center;
@@ -48,7 +48,7 @@ main {
   cursor: pointer;
 }
 
-/* Table styling for clarity */
+/* Table styling */
 table {
   width: 100%;
   border-collapse: collapse;
@@ -66,7 +66,7 @@ tbody td {
   border: 1px solid #ddd;
 }
 
-/* Chart container styling */
+/* Chart container */
 #chart-container {
   height: 400px;
   position: relative;
