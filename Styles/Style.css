@@ -4,7 +4,11 @@
   top: 0;
   left: 0;
   width: 100%;
-  background: white;
+  background-color: white;
+  background-attachment: scroll;
+  background-clip: border-box;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
   z-index: 1000;
   box-shadow: 0 2px 5px rgba(0,0,0,0.1);
   padding: 1.5rem 2rem;
@@ -15,6 +19,7 @@
   flex-wrap: wrap;
   transition: padding 0.3s ease, font-size 0.3s ease;
 }
+
 
 /* Shrink header on scroll */
 .header-with-logo.shrink {
