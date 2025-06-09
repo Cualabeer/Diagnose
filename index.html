@@ -22,9 +22,52 @@
     canvas {
       margin-top: 40px;
     }
+    /* New styles for upload section */
+    #upload-section {
+      max-width: 600px;
+      margin: 20px auto;
+      padding: 15px;
+      background: #f9f9f9;
+      border-radius: 6px;
+      font-family: Arial, sans-serif;
+    }
+    #upload-section label {
+      font-weight: bold;
+    }
+    #fileInfo {
+      margin-top: 10px;
+      font-style: italic;
+      color: #555;
+    }
+    #upload-section a {
+      color: #0366d6;
+      text-decoration: none;
+    }
+    #upload-section a:hover {
+      text-decoration: underline;
+    }
   </style>
 </head>
 <body>
+
+  <div id="upload-section">
+    <h2>Upload a PDF or CSV file</h2>
+    <form id="uploadForm">
+      <label for="fileInput">Choose a PDF or CSV file to upload:</label><br />
+      <input type="file" id="fileInput" accept=".pdf,.csv" />
+      <div id="fileInfo"></div>
+    </form>
+    <p>
+      <strong>Note:</strong> Uploading files directly to GitHub from here is not possible due to browser security.
+      Please upload your file manually to the <code>lcd/</code> folder in your GitHub repository.
+    </p>
+    <p>
+      <a href="https://github.com/Cualabeer/Diagnose/upload/main?path=lcd" target="_blank" rel="noopener noreferrer">
+        Click here to upload your file to the lcd folder on GitHub
+      </a>
+    </p>
+  </div>
+
   <h1>Vehicle Diagnostic Dashboard</h1>
   
   <h2>All Diagnostic Entries</h2>
@@ -37,6 +80,21 @@
   <canvas id="faultChart" width="600" height="400"></canvas>
 
   <script>
+    // File input preview code
+    const fileInput = document.getElementById('fileInput');
+    const fileInfo = document.getElementById('fileInfo');
+
+    fileInput.addEventListener('change', () => {
+      const file = fileInput.files[0];
+      if (!file) {
+        fileInfo.textContent = '';
+        return;
+      }
+      const sizeKB = (file.size / 1024).toFixed(2);
+      fileInfo.textContent = `Selected file: ${file.name} (${sizeKB} KB)`;
+    });
+
+    // Your existing CSV load and chart code
     const csvUrl = 'diagnostics.csv';
 
     Papa.parse(csvUrl, {
