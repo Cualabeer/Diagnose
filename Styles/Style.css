@@ -1,0 +1,68 @@
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.header-with-logo {
+  background-image: url('images/logo.png');
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
+  background-attachment: fixed;
+  padding: 100px 20px 20px;
+  text-align: center;
+  color: white;
+  background-color: #1a1a1a;
+}
+
+#upload-section {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+input[type="file"], input[type="search"] {
+  padding: 8px;
+  font-size: 1rem;
+}
+
+table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 20px auto;
+  max-width: 100%;
+}
+
+th, td {
+  border: 1px solid #ccc;
+  padding: 8px;
+  text-align: left;
+}
+
+th {
+  background-color: #f2f2f2;
+}
+
+#chart-container {
+  max-width: 100%;
+  height: 400px;
+  margin: 40px auto;
+}
+
+@media (max-width: 768px) {
+  #upload-section {
+    flex-direction: column;
+  }
+
+  table, th, td {
+    font-size: 0.9rem;
+  }
+
+  #chart-container {
+    height: 300px;
+  }
+}
