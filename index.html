@@ -59,9 +59,15 @@
       if (data.length > 0) {
         const headers = Object.keys(data[0]);
         thead.innerHTML = '<tr>' + headers.map(h => `<th>${h}</th>`).join('') + '</tr>';
-        tbody.innerHTML = data.map(row =>
-          '<tr>' + headers.map(h => `<td>${row[h] || ''}</td>`).join('') + '</tr>'
-        ).join('');
+       tbody.innerHTML = data.map(row =>
+  '<tr>' + headers.map((h, i) => {
+    const cellValue = row[h] || '';
+    if (i === 0) {
+      return `<td class="clickable-plate" data-plate="${cellValue}">${cellValue}</td>`;
+    }
+    return `<td>${cellValue}</td>`;
+  }).join('') + '</tr>'
+).join('');
       } else {
         thead.innerHTML = '';
         tbody.innerHTML = '<tr><td colspan="100%">No data found</td></tr>';
