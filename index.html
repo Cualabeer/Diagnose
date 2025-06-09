@@ -6,10 +6,61 @@
   <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0 20px 40px 20px;
+      background: #fafafa;
+    }
+    header {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      background: #2c3e50;
+      padding: 15px 20px;
+      color: white;
+      border-radius: 6px;
+      margin-bottom: 20px;
+    }
+    header h1 {
+      margin: 0;
+      font-size: 1.5rem;
+    }
+    #upload-section {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      max-width: 600px;
+    }
+    #fileInput {
+      padding: 6px;
+      border-radius: 4px;
+      border: none;
+      cursor: pointer;
+    }
+    #fileInfo {
+      font-size: 0.9rem;
+      font-style: italic;
+      color: #ddd;
+      min-width: 180px;
+    }
+    #searchInput {
+      padding: 8px 12px;
+      border-radius: 6px;
+      border: none;
+      width: 200px;
+      font-size: 1rem;
+    }
     table {
       border-collapse: collapse;
       width: 100%;
-      margin-top: 20px;
+      margin-top: 0;
+      background: white;
+      border-radius: 6px;
+      overflow: hidden;
+      box-shadow: 0 2px 6px rgb(0 0 0 / 0.1);
     }
     th, td {
       border: 1px solid #ddd;
@@ -21,69 +72,156 @@
     }
     canvas {
       margin-top: 40px;
-    }
-    /* New styles for upload section */
-    #upload-section {
-      max-width: 600px;
-      margin: 20px auto;
-      padding: 15px;
-      background: #f9f9f9;
+      background: white;
       border-radius: 6px;
-      font-family: Arial, sans-serif;
+      box-shadow: 0 2px 6px rgb(0 0 0 / 0.1);
     }
-    #upload-section label {
-      font-weight: bold;
+    p.note {
+      font-size: 0.9rem;
+      color: #444;
+      max-width: 600px;
+      margin-top: 8px;
     }
-    #fileInfo {
-      margin-top: 10px;
-      font-style: italic;
-      color: #555;
-    }
-    #upload-section a {
-      color: #0366d6;
-      text-decoration: none;
-    }
-    #upload-section a:hover {
+    a.upload-link {
+      color: #81d4fa;
       text-decoration: underline;
+    }
+    a.upload-link:hover {
+      color: #4fc3f7;
     }
   </style>
 </head>
 <body>
 
-  <div id="upload-section">
-    <h2>Upload a PDF or CSV file</h2>
-    <form id="uploadForm">
-      <label for="fileInput">Choose a PDF or CSV file to upload:</label><br />
+  <header>
+    <h1>Vehicle Diagnostic Dashboard</h1>
+    <div id="upload-section">
+      <label for="fileInput" style="color:#81d4fa; cursor:pointer; font-weight:bold;">Upload PDF/CSV:</label>
       <input type="file" id="fileInput" accept=".pdf,.csv" />
       <div id="fileInfo"></div>
-    </form>
-    <p>
-      <strong>Note:</strong> Uploading files directly to GitHub from here is not possible due to browser security.
-      Please upload your file manually to the <code>lcd/</code> folder in your GitHub repository.
-    </p>
-    <p>
-      <a href="https://github.com/Cualabeer/Diagnose/upload/main?path=lcd" target="_blank" rel="noopener noreferrer">
-        Click here to upload your file to the lcd folder on GitHub
-      </a>
-    </p>
-  </div>
+      <input type="search" id="searchInput" placeholder="Search table..." title="Filter diagnostic entries" />
+    </div>
+  </header>
 
-  <h1>Vehicle Diagnostic Dashboard</h1>
-  
+  <p class="note">
+    <strong>Note:</strong> Uploading files directly to GitHub from here is not possible due to browser security.<br/>
+    Please upload your file manually to the <code>lcd/</code> folder in your GitHub repository.<br/>
+    <a href="https://github.com/Cualabeer/Diagnose/upload/main?path=lcd" target="_blank" rel="noopener noreferrer" class="upload-link">
+      Click here to upload your file to the lcd folder on GitHub
+    </a>
+  </p>
+
   <h2>All Diagnostic Entries</h2>
-  <table id="data-table">
+  <table id="data-table" aria-label="Diagnostic entries table">
     <thead></thead>
     <tbody></tbody>
   </table>
 
   <h2>Fault Code Frequency</h2>
-  <canvas id="faultChart" width="600" height="400"></canvas>
+  <canvas id="faultChart" width="600" height="400" aria-label="Fault code frequency bar chart"></canvas>
 
   <script>
-    // File input preview code
     const fileInput = document.getElementById('fileInput');
     const fileInfo = document.getElementById('fileInfo');
+    const searchInput = document.getElementById('searchInput');
 
+    let faultChart;
+    let currentData = [];
+
+    function renderDashboard(data) {
+      currentData = data;
+
+      const table = document.getElementById('data-table');
+      const thead = table.querySelector('thead');
+      const tbody = table.querySelector('tbody');
+
+      if (data.length > 0) {
+        const headers = Object.keys(data[0]);
+        let headerRow = '<tr>' + headers.map(h => `<th>${h}</th>`).join('') + '</tr>';
+        thead.innerHTML = headerRow;
+
+        tbody.innerHTML = data.map(row => {
+          return '<tr>' + headers.map(h => `<td>${row[h] || ''}</td>`).join('') + '</tr>';
+        }).join('');
+      } else {
+        thead.innerHTML = '';
+        tbody.innerHTML = '<tr><td colspan="100%">No data available</td></tr>';
+      }
+
+      renderFaultChart(data);
+    }
+
+    function renderFaultChart(data) {
+      let faultCounts = {};
+      data.forEach(row => {
+        if(row['Fault Codes']) {
+          row['Fault Codes'].split(',').forEach(code => {
+            code = code.trim();
+            if(code) {
+              faultCounts[code] = (faultCounts[code] || 0) + 1;
+            }
+          });
+        }
+      });
+
+      const labels = Object.keys(faultCounts);
+      const counts = Object.values(faultCounts);
+
+      const ctx = document.getElementById('faultChart').getContext('2d');
+      if (faultChart) {
+        faultChart.destroy();
+      }
+      faultChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: labels,
+          datasets: [{
+            label: 'Fault Code Frequency',
+            data: counts,
+            backgroundColor: 'rgba(75, 192, 192, 0.6)'
+          }]
+        },
+        options: {
+          scales: {
+            y: { beginAtZero: true }
+          }
+        }
+      });
+    }
+
+    // Filter table rows based on search input
+    searchInput.addEventListener('input', () => {
+      const filter = searchInput.value.toLowerCase();
+      const table = document.getElementById('data-table');
+      const tbody = table.querySelector('tbody');
+      const rows = tbody.querySelectorAll('tr');
+
+      rows.forEach(row => {
+        const cellsText = Array.from(row.cells).map(td => td.textContent.toLowerCase()).join(' ');
+        if (cellsText.includes(filter)) {
+          row.style.display = '';
+        } else {
+          row.style.display = 'none';
+        }
+      });
+    });
+
+    // Load CSV from GitHub
+    function loadInitialCSV() {
+      const csvUrl = 'diagnostics.csv';
+      Papa.parse(csvUrl, {
+        download: true,
+        header: true,
+        complete: function(results) {
+          renderDashboard(results.data);
+        },
+        error: function(err) {
+          alert('Failed to load initial CSV: ' + err.message);
+        }
+      });
+    }
+
+    // Handle file upload input change
     fileInput.addEventListener('change', () => {
       const file = fileInput.files[0];
       if (!file) {
@@ -92,69 +230,27 @@
       }
       const sizeKB = (file.size / 1024).toFixed(2);
       fileInfo.textContent = `Selected file: ${file.name} (${sizeKB} KB)`;
-    });
 
-    // Your existing CSV load and chart code
-    const csvUrl = 'diagnostics.csv';
-
-    Papa.parse(csvUrl, {
-      download: true,
-      header: true,
-      complete: function(results) {
-        const data = results.data;
-
-        // Generate table headers and rows
-        const table = document.getElementById('data-table');
-        const thead = table.querySelector('thead');
-        const tbody = table.querySelector('tbody');
-
-        if (data.length > 0) {
-          // Headers
-          const headers = Object.keys(data[0]);
-          let headerRow = '<tr>' + headers.map(h => `<th>${h}</th>`).join('') + '</tr>';
-          thead.innerHTML = headerRow;
-
-          // Data rows
-          tbody.innerHTML = data.map(row => {
-            return '<tr>' + headers.map(h => `<td>${row[h] || ''}</td>`).join('') + '</tr>';
-          }).join('');
-        }
-
-        // Fault code frequency chart
-        let faultCounts = {};
-        data.forEach(row => {
-          if(row['Fault Codes']) {
-            row['Fault Codes'].split(',').forEach(code => {
-              code = code.trim();
-              if(code) {
-                faultCounts[code] = (faultCounts[code] || 0) + 1;
-              }
-            });
-          }
-        });
-
-        const labels = Object.keys(faultCounts);
-        const counts = Object.values(faultCounts);
-
-        const ctx = document.getElementById('faultChart').getContext('2d');
-        new Chart(ctx, {
-          type: 'bar',
-          data: {
-            labels: labels,
-            datasets: [{
-              label: 'Fault Code Frequency',
-              data: counts,
-              backgroundColor: 'rgba(75, 192, 192, 0.6)'
-            }]
+      if(file.name.toLowerCase().endsWith('.csv')) {
+        Papa.parse(file, {
+          header: true,
+          complete: function(results) {
+            renderDashboard(results.data);
+            searchInput.value = ''; // reset search filter
           },
-          options: {
-            scales: {
-              y: { beginAtZero: true }
-            }
+          error: function(err) {
+            alert('Error parsing CSV file: ' + err.message);
           }
         });
+      } else if (file.name.toLowerCase().endsWith('.pdf')) {
+        alert('PDF upload detected. PDF viewing is not supported in this dashboard.');
+      } else {
+        alert('Unsupported file type. Please upload a PDF or CSV file.');
       }
     });
+
+    window.onload = loadInitialCSV;
   </script>
+
 </body>
 </html>
