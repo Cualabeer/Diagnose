@@ -7,6 +7,9 @@
   <link rel="stylesheet" href="Styles/style.css" />
   <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  document.getElementById('close-report').addEventListener('click', function () {
+  document.getElementById('report-overlay').classList.add('hidden');
+});
 </head>
 <script>
   window.addEventListener('scroll', () => {
