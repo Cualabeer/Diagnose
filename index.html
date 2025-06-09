@@ -77,48 +77,7 @@
       }
     }
 
-    function updateChart(data) {
-      let faultCounts = {};
-      data.forEach(row => {
-        if (row['Fault Codes']) {
-          row['Fault Codes'].split(',').forEach(code => {
-            code = code.trim();
-            if (code) {
-              faultCounts[code] = (faultCounts[code] || 0) + 1;
-            }
-          });
-        }
-      });
-
-      const labels = Object.keys(faultCounts);
-      const counts = Object.values(faultCounts);
-
-      if (window.faultChartInstance) {
-        window.faultChartInstance.data.labels = labels;
-        window.faultChartInstance.data.datasets[0].data = counts;
-        window.faultChartInstance.update();
-      } else {
-        const ctx = document.getElementById('faultChart').getContext('2d');
-        window.faultChartInstance = new Chart(ctx, {
-          type: 'bar',
-          data: {
-            labels: labels,
-            datasets: [{
-              label: 'Fault Code Frequency',
-              data: counts,
-              backgroundColor: 'rgba(75, 192, 192, 0.6)'
-            }]
-          },
-          options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            scales: {
-              y: { beginAtZero: true }
-            }
-          }
-        });
-      }
-    }
+    faultCounts
 
     function loadCsvFromText(csvText) {
       Papa.parse(csvText, {
