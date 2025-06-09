@@ -1,4 +1,4 @@
-/* Make the header fixed at the top */
+/* Fixed header base style */
 .header-with-logo {
   position: fixed;
   top: 0;
@@ -7,12 +7,22 @@
   background: white;
   z-index: 1000;
   box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-  padding: 1rem 2rem;
+  padding: 1.5rem 2rem;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
   flex-wrap: wrap;
+  transition: padding 0.3s ease, font-size 0.3s ease;
+}
+
+/* Shrink header on scroll */
+.header-with-logo.shrink {
+  padding: 0.5rem 1.5rem;
+}
+
+.header-with-logo.shrink h1 {
+  font-size: 1.2rem;
 }
 
 /* Reset margin */
@@ -21,16 +31,21 @@ body {
   font-family: Arial, sans-serif;
 }
 
-/* Push the content below the fixed header */
+/* Push content below header */
 main {
-  padding-top: 130px; /* Adjust based on header height */
+  padding-top: 130px;
   max-width: 1200px;
   margin: 0 auto;
   padding-left: 1rem;
   padding-right: 1rem;
+  transition: padding-top 0.3s ease;
 }
 
-/* Upload section inside header */
+/* Optional: reduce top padding slightly when header shrinks */
+body.shrunk main {
+  padding-top: 100px;
+}
+
 #upload-section {
   display: flex;
   align-items: center;
@@ -48,7 +63,6 @@ main {
   cursor: pointer;
 }
 
-/* Table styling */
 table {
   width: 100%;
   border-collapse: collapse;
@@ -66,7 +80,6 @@ tbody td {
   border: 1px solid #ddd;
 }
 
-/* Chart container */
 #chart-container {
   height: 400px;
   position: relative;
