@@ -1,6 +1,0 @@
-Date,VIN,Make,Model,Mileage,Fault Codes,Repairs Done,Notes
-2025-06-06,WBA1234567890,BMW,F20,115000,P0300,Replaced injectors,Engine misfire fixed
-2025-06-05,WBA9876543210,MINI,R56,90000,P0420,Catalytic converter replaced,Emission code cleared
-2025-06-08,989141015615,Renault,Clio Mk3,78000,DF652;DF1012;DF025,"Replace EGT sensor; Test/replace glow plug relay & glow plugs; Inspect CAN bus wiring; Clean/replace EGR valve","Throttle position at idle ~34.9%, normal; throttle maxes at 90%; Diagnostic voltage/resistance reference included"
-
-
