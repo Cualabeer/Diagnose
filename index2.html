@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Booking Form with Recovery Truck Animation</title>
+<style>
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
+      Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+    margin: 0; padding: 0;
+    background: #f0f0f0;
+    overflow-x: hidden;
+    font-size: 18px;
+    line-height: 1.4;
+    color: #222;
+  }
+
+  #main-content {
+    padding: 2rem 1.5rem;
+    transition: filter 0.3s ease;
+    max-width: 480px;
+    margin: 0 auto;
+  }
+
+  body.modal-open #main-content {
+    filter: blur(6px);
+    user-select: none;
+  }
+
+  h1 {
+    color: #004080;
+    text-align: center;
+    font-size: 2.4rem;
+    margin-bottom: 0.5rem;
+  }
+
+  p {
+    text-align: center;
+    font-size: 1.15rem;
+    margin-bottom: 2rem;
+    color: #004080;
+    font-weight: 600;
+  }
+
+  button#startBookingBtn {
+    background-color: #004080;
+    color: white;
+    border: none;
+    padding: 1rem 2.5rem;
+    font-size: 1.25rem;
+    border-radius: 8px;
+    cursor: pointer;
+    box-shadow: 0 4px 8px rgb(0 64 128 / 0.3);
+    transition: background-color 0.25s ease;
+    display: block;
+    margin: 0 auto;
+    min-width: 220px;
+  }
+  button#startBookingBtn:hover,
+  button#startBookingBtn:focus {
+    background-color: #002f60;
+    outline: none;
+  }
+
+  /* Modal Overlay */
+  .modal-overlay {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.5);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    padding: 1rem;
+  }
+  body.modal-open .modal-overlay {
+    display: flex;
+  }
+
+  /* Modal Container */
+  .modal {
+    background: #fff;
+    border-radius: 14px;
+    max-width: 420px;
+    width: 100%;
+    padding: 2.5rem 2.5rem 3rem;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.3);
+    position: relative;
+    font-size: 1.15rem;
+  }
+
+  /* Animation container */
+  .animation-container {
+    position: relative;
+    width: 100%;
+    height: 80px;
+    margin-bottom: 2rem;
+    user-select: none;
+  }
+
+  /* Road */
+  svg.road {
+    width: 100%;
+    height: 80px;
+    overflow: visible;
+  }
+
+  /* Recovery truck styles */
+  .truck {
+    width: 50px;
+    height: 50px;
+    position: absolute;
+    top: 15px;
+    left: 0;
+    transition: left 0.6s ease;
+  }
+
+  /* Car styles */
+  .car {
+    position: absolute;
+    top: 15px;
+    right: 0;
+    width: 50px;
+    height: 50px;
+  }
+
+  /* Question Label */
+  .question {
+    font-weight: 700;
+    margin-bottom: 0.9rem;
+    color: #004080;
+  }
+
+  /* Inputs */
+  input[type="text"],
+  input[type="email"],
+  input[type="tel"],
+  input[type="date"],
+  select,
+  textarea {
+    width: 100%;
+    padding: 1rem 1.2rem;
+    font-size: 1.25rem;
+    border: 2px solid #ccc;
+    border-radius: 10px;
+    outline-offset: 3px;
+    outline-color: #004080;
+    box-sizing: border-box;
+    transition: border-color 0.25s ease;
+    font-weight: 500;
+  }
+  input[type="text"]:focus,
+  input[type="email"]:focus,
+  input[type="tel"]:focus,
+  input[type="date"]:focus,
+  select:focus,
+  textarea:focus {
+    border-color: #004080;
+    background-color: #e6f0ff;
+  }
+
+  textarea {
+    resize: vertical;
+    min-height: 100px;
+  }
+
+  /* Button Group */
+  .button-group {
+    margin-top: 2.3rem;
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+
+  .button-group button {
+    flex: 1 1 0;
+    background-color: #004080;
+    color: white;
+    border: none;
+    padding: 1.1rem 0;
+    font-size: 1.25rem;
+    border-radius: 10px;
+    cursor: pointer;
+    box-shadow: 0 4px 9px rgba(0,64,128,0.35);
+    transition: background-color 0.3s ease;
+  }
+  .button-group button:disabled {
+    background-color: #999;
+    cursor: not-allowed;
+    box-shadow: none;
+  }
+  .button-group button:hover:not(:disabled),
+  .button-group button:focus:not(:disabled) {
+    background-color: #002f60;
+    outline: none;
+  }
+
+  /* Success message */
+  #success-message {
+    text-align: center;
+    color: green;
+    font-weight: 700;
+    font-size: 1.5rem;
+  }
+
+  /* Responsive adjustments */
+  @media (max-width: 480px) {
+    body {
+      font-size: 16px;
+    }
+    h1 {
+      font-size: 2rem;
+    }
+    .modal {
+      padding: 2rem 1.8rem 2.5rem;
+      font-size: 1.1rem;
+    }
+    input[type="text"],
+    input[type="email"],
+    input[type="tel"],
+    input[type="date"],
+    select,
+    textarea {
+      font-size: 1.15rem;
+      padding: 0.9rem 1rem;
+    }
+    .button-group button {
+      font-size: 1.15rem;
+      padding: 1rem 0;
+    }
+    button#startBookingBtn {
+      padding: 1rem 2rem;
+      font-size: 1.15rem;
+      min-width: 180px;
+    }
+  }
+</style>
+</head>
+<body>
+
+<div id="main-content">
+  <h1>Book Your Service</h1>
+  <p>Click the button below to start your booking.</p>
+  <div style="text-align:center;">
+    <button id="startBookingBtn" aria-haspopup="dialog" aria-controls="modalOverlay">Start Booking</button>
+  </div>
+</div>
+
+<!-- Modal Overlay & Form -->
+<div class="modal-overlay" id="modalOverlay" aria-hidden="true" aria-modal="true" role="dialog" aria-labelledby="modalTitle">
+  <div class="modal" role="document" aria-live="polite">
+
+    <div class="animation-container" aria-hidden="true">
+      <!-- Road SVG -->
+      <svg class="road" viewBox="0 0 420 80" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+        <!-- Road base -->
+        <rect x="0" y="30" width="420" height="20" fill="#666" rx="10" ry="10" />
+        <!-- Road dashed lines -->
+        <g stroke="#fff" stroke-width="4" stroke-dasharray="20 20">
+          <line x1="10" y1="40" x2="50" y2="40" />
+          <line x1="70" y1="40" x2="110" y2="40" />
+          <line x1="130" y1="40" x2="170" y2="40" />
+          <line x1="190" y1="40" x2="230" y2="40" />
+          <line x1="250" y1="40" x2="290" y2="40" />
+          <line x1="310" y1="40" x2="350" y2="40" />
+          <line x1="370" y1="40" x2="410" y2="40" />
+        </g>
+      </svg>
+
+      <!-- Recovery Truck Icon -->
+      <svg id="truckIcon" class="truck" viewBox="0 0 64 64" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg">
+        <rect x="8" y="24" width="24" height="16" fill="#004080" rx="2" ry="2"/>
+        <rect x="32" y="28" width="20" height="12" fill="#0066cc" rx="3" ry="3"/>
+        <circle cx="20" cy="44" r="6" fill="#222" />
+        <circle cx="44" cy="44" r="6" fill="#222" />
+        <circle cx="20" cy="44" r="4" fill="#ddd" />
+        <circle cx="44" cy="44" r="4" fill="#ddd" />
+        <rect x="12" y="20" width="8" height="4" fill="#003366" rx="1" ry="1"/>
+      </svg>
+
+      <!-- Car Icon -->
+      <svg class="car" viewBox="0 0 64 64" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg">
+        <rect x="10" y="28" width="44" height="14" fill="#e63946" rx="4" ry="4"/>
+        <circle cx="20" cy="48" r="6" fill="#222" />
+        <circle cx="44" cy="48" r="6" fill="#222" />
+        <circle cx="20" cy="48" r="4" fill="#eee" />
+        <circle cx="44" cy="48" r="4" fill="#eee" />
+        <rect x="22" y="24" width="20" height="6" fill="#b22222" rx="2" ry="2"/>
+      </svg>
+    </div>
+
+    <form id="bookingForm" novalidate>
+      <!-- Questions injected here -->
+    </form>
+    
+    <div class="button-group">
+      <button type="button" id="prevBtn" disabled aria-label="Previous question">Previous</button>
+      <button type="button" id="nextBtn" aria-label="Next question">Next</button>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  const questions = [
+    {
+      id: 'name',
+      label: 'Full Name *',
+      type: 'text',
+      required: true,
+      placeholder: 'Enter your full name',
+      validation: value => value.trim() !== ''
+    },
+    {
+      id: 'email',
+      label: 'Email Address *',
+      type: 'email',
+      required: true,
+      placeholder: 'Enter your email',
+      validation: value => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)
+    },
+    {
+      id: 'phone',
+      label: 'Phone Number *',
+      type: 'tel',
+      required: true,
+      placeholder: 'Enter your phone number',
+      validation: value => value.trim().length >= 6
+    },
+    {
+      id: 'service',
+      label: 'Select Service *',
+      type: 'select',
+      required: true,
+      options: ['', 'MOT', 'Full Service', 'Repair', 'Other'],
+      validation: value => value !== ''
+    },
+    {
+      id: 'date',
+      label: 'Preferred Date *',
+      type: 'date',
+      required: true,
+      validation: value => value !== ''
+    },
+    {
+      id: 'notes',
+      label: 'Additional Notes',
+      type: 'textarea',
+      required: false,
+      placeholder: 'Optional',
+      validation: () => true
+    }
+  ];
+
+  const form = document.getElementById('bookingForm');
+  const modalOverlay = document.getElementById('modalOverlay');
+  const prevBtn = document.getElementById('prevBtn');
+  const nextBtn = document.getElementById('nextBtn');
+  const startBookingBtn = document.getElementById('startBookingBtn');
+  const mainContent = document.getElementById('main-content');
+  const truckIcon = document.getElementById('truckIcon');
+
+  let currentQuestion = 0;
+  let answers = {};
+
+  function updateTruckPosition(index) {
+    requestAnimationFrame(() => {
+      const container = truckIcon.parentElement;
+      if (!container) return;
+
+      const containerWidth = container.offsetWidth;
+      const truckWidth = truckIcon.offsetWidth;
+
+      if (containerWidth === 0 || truckWidth === 0) {
+        setTimeout(() => updateTruckPosition(index), 50);
+        return;
+      }
+
+      const totalSteps = questions.length - 1;
+      const progressRatio = index / totalSteps;
+      const maxLeft = containerWidth - truckWidth;
+      const leftPos = maxLeft * progressRatio;
+
+      truckIcon.style.left = leftPos + 'px';
+    });
+  }
+
+  function createInput(q) {
+    let input;
+    switch(q.type) {
+      case 'select':
+        input = document.createElement('select');
+        input.name = q.id;
+        input.id = q.id;
+        q.options.forEach(opt => {
+          const option = document.createElement('option');
+          option.value = opt;
+          option.textContent = opt === '' ? '-- Please choose --' : opt;
+          input.appendChild(option);
+        });
+        break;
+      case 'textarea':
+        input = document.createElement('textarea');
+        input.name = q.id;
+        input.id = q.id;
+        input.placeholder = q.placeholder || '';
+        input.rows = 4;
+        break;
+      default:
+        input = document.createElement('input');
+        input.type = q.type;
+        input.name = q.id;
+        input.id = q.id;
+        input.placeholder = q.placeholder || '';
+        break;
+    }
+    if (q.required) input.required = true;
+    return input;
+  }
+
+  function renderQuestion(index) {
+    form.innerHTML = '';
+
+    const q = questions[index];
+
+    const label = document.createElement('label');
+    label.htmlFor = q.id;
+    label.className = 'question';
+    label.textContent = q.label;
+    form.appendChild(label);
+
+    const input = createInput(q);
+
+    if (answers[q.id]) input.value = answers[q.id];
+
+    form.appendChild(input);
+
+    setTimeout(() => input.focus(), 150);
+
+    prevBtn.disabled = index === 0;
+    nextBtn.textContent = (index === questions.length - 1) ? 'Submit' : 'Next';
+
+    updateTruckPosition(index);
+  }
+
+  function validateCurrent() {
+    const q = questions[currentQuestion];
+    const input = form.elements[q.id];
+    if (!input) return false;
+    return q.validation(input.value);
+  }
+
+  function saveCurrentAnswer() {
+    const q = questions[currentQuestion];
+    const input = form.elements[q.id];
+    if (input) {
+      answers[q.id] = input.value.trim();
+    }
+  }
+
+  function openModal() {
+    document.body.classList.add('modal-open');
+    modalOverlay.setAttribute('aria-hidden', 'false');
+    renderQuestion(currentQuestion);
+  }
+
+  function closeModal() {
+    document.body.classList.remove('modal-open');
+    modalOverlay.setAttribute('aria-hidden', 'true');
+  }
+
+  startBookingBtn.addEventListener('click', () => {
+    openModal();
+  });
+
+  prevBtn.addEventListener('click', () => {
+    if (currentQuestion > 0) {
+      saveCurrentAnswer();
+      currentQuestion--;
+      renderQuestion(currentQuestion);
+    }
+  });
+
+  nextBtn.addEventListener('click', () => {
+    if (!validateCurrent()) {
+      alert('Please enter a valid response for "' + questions[currentQuestion].label + '"');
+      return;
+    }
+    saveCurrentAnswer();
+
+    if (currentQuestion === questions.length - 1) {
+      submitForm();
+    } else {
+      currentQuestion++;
+      renderQuestion(currentQuestion);
+    }
+  });
+
+  function submitForm() {
+    nextBtn.disabled = true;
+    prevBtn.disabled = true;
+    nextBtn.textContent = 'Sending...';
+
+    const formData = new FormData();
+    for (const key in answers) {
+      formData.append(key, answers[key]);
+    }
+    if (answers.email) {
+      formData.append('_replyto', answers.email);
+    }
+
+    fetch('https://formspree.io/f/mgejbwqv', { // <-- Replace this with your Formspree form ID
+      method: 'POST',
+      body: formData,
+      headers: {
+        'Accept': 'application/json'
+      }
+    }).then(response => {
+      if (response.ok) {
+        showSuccess();
+      } else {
+        alert('Sorry, there was a problem submitting your form.');
+        nextBtn.disabled = false;
+        prevBtn.disabled = false;
+        nextBtn.textContent = 'Submit';
+      }
+    }).catch(() => {
+      alert('Network error. Please try again later.');
+      nextBtn.disabled = false;
+      prevBtn.disabled = false;
+      nextBtn.textContent = 'Submit';
+    });
+  }
+
+  function showSuccess() {
+    form.innerHTML = '<p id="success-message">Thank you! Your booking has been received.</p>';
+    prevBtn.style.display = 'none';
+    nextBtn.style.display = 'none';
+    updateTruckPosition(questions.length - 1);
+  }
+
+  // Close modal on outside click or ESC key with confirmation
+  modalOverlay.addEventListener('click', e => {
+    if (e.target === modalOverlay) {
+      if (confirm('Are you sure you want to cancel the booking?')) {
+        closeModal();
+        resetForm();
+      }
+    }
+  });
+
+  document.addEventListener('keydown', e => {
+    if (document.body.classList.contains('modal-open')) {
+      if (e.key === 'Escape') {
+        if (confirm('Are you sure you want to cancel the booking?')) {
+          closeModal();
+          resetForm();
+        }
+      }
+    }
+  });
+
+  // Reset form and state
+  function resetForm() {
+    answers = {};
+    currentQuestion = 0;
+    prevBtn.disabled = true;
+    nextBtn.disabled = false;
+    prevBtn.style.display = 'inline-block';
+    nextBtn.style.display = 'inline-block';
+    nextBtn.textContent = 'Next';
+    form.innerHTML = '';
+    updateTruckPosition(0);
+  }
+
+  // On window resize update truck position so it stays correct
+  window.addEventListener('resize', () => {
+    updateTruckPosition(currentQuestion);
+  });
+
+</script>
+</body>
+</html>
