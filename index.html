@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Black Lion MOT Booking</title>
+  <link rel="stylesheet" href="global.css" />
+</head>
+<body>
+  <header>
+    <h1>Black Lion MOT Booking</h1>
+  </header>
+  <div class="container">
+    <div class="number-plate">Your Vehicle Reg</div>
+    <div class="progress"><div class="progress-bar" id="progressBar"></div></div>
+    <form action="https://formsubmit.co/your@email.com" method="POST" onsubmit="return confirmBooking()">
+      <div class="question">
+        <label for="name">1. Full Name:</label><br />
+        <input type="text" name="name" required />
+      </div>
+      <div class="question">
+        <label for="email">2. Email:</label><br />
+        <input type="email" name="email" required />
+      </div>
+      <div class="question">
+        <label for="reg">3. Vehicle Registration:</label><br />
+        <input type="text" name="registration" required />
+      </div>
+      <div class="question">
+        <label for="slot">4. Choose Booking Slot:</label><br />
+        <select name="slot" required id="slotPicker"></select>
+      </div>
+      <input type="hidden" name="location" id="locationField"/>
+      <input type="submit" value="Book Now" />
+    </form>
+    <div class="confirmation" id="confirmation" style="display:none;">
+      <h2>Booking Sent!</h2>
+      <p>You will receive confirmation via email shortly.</p>
+    </div>
+  </div>
+  <footer>&copy; 2025 Black Lion MOT Garage, Gillingham Kent</footer>
+  <script src="main.js"></script>
+</body>
+</html>
